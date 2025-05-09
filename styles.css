@@ -3,6 +3,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
 }
 
 
@@ -38,8 +39,11 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-weight: bold;
     font-size: 30px;
+}
+
+.digit:active {
+    background-color: #1B4A88;
 }
 
 .display {
@@ -62,4 +66,8 @@ h1 {
     border: 2px solid #C7C07F;
     margin: 30px;
     font-size: 20px;
+}
+
+.operator {
+    background-color: #82A6ED;
 }

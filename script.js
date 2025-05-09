@@ -1,3 +1,4 @@
+// Functions
 function add(a, b)
 {
     return a + b;
@@ -18,17 +19,39 @@ function divide(a, b)
     return a / b;
 }
 
-let number1 = 0;
-let number2;
-let operator;
 
+// GLOBAL VARIABLES
+let number1 = "";
+let number2 = "";
+
+
+
+// Display for Calculator
 const display = document.querySelector(".display");
 
-let displayString = "";
+let calculationDone = false;
 
+let displayString = "";
+let regex = /\d+[+\-*/]\d+[+\-*/]?/;
+let regexForMultipleOperators = /(\d+)([+\-*/]+)(\d+)/;
+let answer;
+
+// Operator Function for Calling Functions
 function operatorFunction(operatorArgument)
 {
-    let answer;
+    
+
+    if (number1.includes("."))
+    {
+        number1 = parseFloat(number1);
+    }
+    else
+    {
+        number1 = Math.abs(parseInt(number1));
+    }
+    
+    number2 = number2.includes(".")? parseFloat(number2) : Math.abs(parseFloat(number2));
+
 
     switch(operatorArgument)
     {
@@ -41,70 +64,136 @@ function operatorFunction(operatorArgument)
         case '*':
             answer = multiply(number1, number2);
             break;
-        case '*':
-            answer = add(number1, number2);
+        case '/':
+            if (number2 === 0)
+            {
+                alert("Can't divide by zero");
+                reset();
+                return;
+            }
+            answer = divide(number1, number2);
             break;
-        case '⌫':
-            console.log("Cross is called"); /* bp*/
-            number2 = 0;
-            let newDisplayString = displayString.slice(0, -1);
-            display.textContent = newDisplayString;
-            return;
+        case Default:
+            alert("Nothing happens");
                 
     }
+
+    // After finding answer display it
+    if (answer.toString().includes("."))
+    {
+        answer = parseFloat(answer).toFixed(4);
+    }
+
     displayString = answer;
     display.textContent = displayString;
-    number1 = answer;
+    number1 = "";
+    number2 = "";
+
+    calculationDone = true;
+
 
 }
 
+
+
 // Function for display
+const digits = document.querySelectorAll(".digit");
+
 function enableDisplay()
 {
-    const digits = document.querySelectorAll(".digit");
-    
-    
-
     digits.forEach(function(digit) {
+
+        // if any of digit is clicked
         digit.addEventListener("click", () => {
-        
+
             let digitText = digit.textContent;
+
+            if (calculationDone === true)
+            {
+                if (digitText === "*" || digitText === "/" ||
+                    digitText === "+" || digitText === "-"
+                )
+                {
+                    number1 = answer;
+                }
+            }
+            let operator = "";
+
+            
 
             if (digitText !== "=" && digitText !== "⌫")
             {
                 displayString += digitText;
+                // displayString += " ";
             }
             
+            display.textContent = displayString; // This is getting ignored.
+            let matchRegex = displayString.match(regexForMultipleOperators);
 
-            display.textContent = displayString;
-
-            console.log(digit); /*bp*/
-            if (digitText === '1' || digitText === '2' || digitText === '3' || digitText === '4' ||
-                digitText === '5' || digitText === '6' || digitText === '7' || digitText === '8' ||
-                digitText === '9' || digitText === '0'
-            )
+            if (digitText === "=" || regex.test(displayString) === true)
             {
-                if (number1 === 0)
+                
+                if (displayString === "")
                 {
-                    number1 = parseInt(digitText);
+                    alert("You haven't clicked any digit");
+                    return;
                 }
-                else
-                {
-                    number2 = parseInt(digitText);
-                }
-
+                let operatorGot = evaluate(displayString, operator);
+                operatorFunction(operatorGot)
             }
-            else if (digitText === "=" || digitText === "⌫")
+            else if (matchRegex)
             {
-                operatorFunction(operator);
+                number1 = matchRegex[1];
+                number2 = matchRegex[3];
+                let lastOperator = matchRegex[2].slice(-1);
+                operatorFunction(lastOperator)
+                
             }
-            else
-            {
-                operator = digitText;
-            }
+        
+        
 
         });
     });
 }
 
 enableDisplay();
+
+// Evaluation of Expression considering single pair
+function evaluate(expression, operator)
+{
+    let operatorEncountered = false;
+
+
+    for (let ch of expression)
+    {
+        if ((!isNaN(parseInt(ch)) && operatorEncountered === false) || (ch === "." && operatorEncountered === false))
+        {
+           number1 += ch;
+           
+        }
+        else if ((operatorEncountered === true) || (ch === "." && operatorEncountered === true))
+        {
+            number2 += ch;
+        }
+        else
+        {
+            operatorEncountered = true;
+            operator = ch;
+        }
+    }
+
+    return operator;
+}
+
+// For Clear Button
+const clearButton = document.querySelector(".clear");
+clearButton.addEventListener("click", reset);
+
+function reset()
+{
+    display.textContent = "";
+    number1 = "";
+    number2 = "";
+    displayString = "";
+    operator = "";
+}
