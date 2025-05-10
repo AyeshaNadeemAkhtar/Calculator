@@ -140,14 +140,8 @@ function enableDisplay()
             display.textContent = displayString; // This is getting ignored.
             let matchRegex = displayString.match(regexForMultipleOperators);
 
-            if (digitText === "=" || regex.test(displayString) === true)
+            if (regex.test(displayString) === true)
             {
-                
-                if (displayString === "")
-                {
-                    alert("You haven't clicked any digit");
-                    return;
-                }
                 let operatorGot = evaluate(displayString, operator);
                 operatorFunction(operatorGot)
             }
