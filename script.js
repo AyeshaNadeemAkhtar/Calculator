@@ -98,6 +98,7 @@ function operatorFunction(operatorArgument)
 
 // Function for display
 const digits = document.querySelectorAll(".digit");
+let calculationContinued = false;
 
 function enableDisplay()
 {
@@ -114,8 +115,17 @@ function enableDisplay()
                     digitText === "+" || digitText === "-"
                 )
                 {
-                    number1 = answer;
+                    calculationContinued = true;
+                    
+
                 }
+                else
+                {
+                    
+                    calculationContinued = false;
+                    reset();
+                }
+                calculationDone = false;
             }
             let operator = "";
 
